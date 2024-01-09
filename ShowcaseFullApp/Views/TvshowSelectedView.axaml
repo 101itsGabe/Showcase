@@ -1,0 +1,61 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:ShowcaseFullApp.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ShowcaseFullApp.Views.TvShowSelectedView"
+             x:DataType="vm:TvShowSelectedViewModel">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:TvShowSelectedViewModel />
+    </Design.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Text="{Binding TvShowTitle, Mode=TwoWay}"
+                   FontSize="30"/>
+        
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock FontSize="30">
+                <Run Text="Seasons: "/>
+                <Run Text="{Binding SeasonCount}"/>
+            </TextBlock>
+            <TextBlock Grid.Column="1" FontSize="30">
+                <Run Text="Raitg"/>
+                <Run Text="{Binding Rating}"/>
+                <Run Text="/10"/>
+            </TextBlock>
+        </Grid>
+        
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text ="Ep: "
+                       FontSize="30"/>
+                <Image Grid.Column="1" Source="{Binding ImageUrl}"
+                    Width="200" Height="200"></Image>
+                <TextBlock Grid.Column="2" Text="{Binding CurEpisode, Mode=TwoWay}"
+                   FontSize="30"/>
+        </Grid>
+        
+        <Button Grid.Row="3" Content="+" Click="UpdateEpisode"/>
+        
+        <TextBox Grid.Row="4"></TextBox>
+    </Grid>
+</UserControl>
