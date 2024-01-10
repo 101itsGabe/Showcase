@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.Loader;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -18,12 +19,22 @@ public partial class TvShowView : UserControl
 
     public void SelectedTvShow(object sender, RoutedEventArgs e)
     {
+        /*
         if (sender is Button { DataContext: TvShow show })
         {
             tvshowviewmodel.selectedTvShow = show;
+            this.Content = new TvShowSelectedViewModel(tvshowviewmodel.selectedTvShow.Title);
         }
+        */
+        
+        if (sender is Button { DataContext: string title })
+        {
+            Console.WriteLine("help");
+            Console.WriteLine(title);
+            this.Content = new TvShowSelectedView(title);
+        }
+        
 
-        this.Content = new TvShowSelectedView(tvshowviewmodel.selectedTvShow);
     }
     
     

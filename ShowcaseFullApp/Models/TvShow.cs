@@ -27,6 +27,7 @@ public class TvShow
     
     
     public string Title { get; set; }
+    public string Description { get; set; }
     public List<int> EpisodeCount { get; set; }
     public int SeasonCount { get; set; }
     

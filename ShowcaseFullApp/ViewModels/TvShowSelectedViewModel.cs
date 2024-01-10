@@ -47,8 +47,21 @@ public class TvShowSelectedViewModel : ViewModelBase, INotifyPropertyChanged
         tvservice = TvShowService.Current;
         curTvShow = show;
         searchedtvshow.Title = "Loading...";
-        InitTvSearchTitle();
+        //InitTvSearchTitle();
     }
+
+    public TvShowSelectedViewModel(string showName)
+    {
+        //Console.WriteLine("heave");
+        tvclient = new TvShowClient();
+        searchedtvshow = new TvShow();
+        //Console.WriteLine("we in here #1");
+        tvservice = TvShowService.Current;
+        searchedtvshow.Title = "Loading...";
+        searchedtvshow.Description = "loading...";
+        InitTvSearchTitle(showName);
+    }
+    
 
     public string TvShowTitle
     {
@@ -114,6 +127,12 @@ public class TvShowSelectedViewModel : ViewModelBase, INotifyPropertyChanged
         get => curTvShow.CurEpisode;
         set => curTvShow.CurEpisode = value;
     }
+
+    public string Desc
+    {
+        get => searchedtvshow.Description;
+        set => searchedtvshow.Description = value;
+    }
     
     
     
@@ -124,9 +143,10 @@ public class TvShowSelectedViewModel : ViewModelBase, INotifyPropertyChanged
         OnPropertyChanged(nameof(CurEpisode));
     }
 
-    private async void InitTvSearchTitle()
+    private async void InitTvSearchTitle(string showName)
     {
-        var json = await tvclient.GetAllShowsAsync();
+        //Console.WriteLine("ello there");
+        var json = await tvclient.GetAShowsAsync(showName);
         if (json != null)
         {
             tvservice.Convert(json, searchedtvshow);
@@ -134,9 +154,11 @@ public class TvShowSelectedViewModel : ViewModelBase, INotifyPropertyChanged
 
         Console.WriteLine("well ill be");
         //var snapshot = firebase.GetDocumentAsync();
+        Console.WriteLine(searchedtvshow.Description);
         OnPropertyChanged(nameof(TvShowTitle));
         OnPropertyChanged(nameof(SeasonCount));
         OnPropertyChanged(nameof(Rating));
+        OnPropertyChanged(nameof(Desc));
 
     }
 }
