@@ -15,8 +15,6 @@ using Avalonia.Media.Imaging;
 using Google.Cloud.Firestore;
 using ShowcaseFullApp.Services;
 
-
-
 namespace ShowcaseFullApp.ViewModels;
 
 public class TvShowSelectedViewModel : ViewModelBase, INotifyPropertyChanged
