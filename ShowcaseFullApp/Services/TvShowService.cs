@@ -1,5 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO.Pipes;
+using System.Linq;
+using Google.Apis.Logging;
 using Newtonsoft.Json.Linq;
+using ShowcaseFullApp.Api;
 using ShowcaseFullApp.Models;
 
 namespace ShowcaseFullApp.Services;
@@ -7,6 +13,13 @@ namespace ShowcaseFullApp.Services;
 public class TvShowService
 {
     private static TvShowService? _instance;
+
+    public List<TvShow> showList { get; set; }
+
+    public TvShowService()
+    {
+        showList = new List<TvShow>();
+    }
 
     public static TvShowService Current
     {
@@ -51,16 +64,33 @@ public class TvShowService
         {
             show.Rating = dec;
         }
+
+        var desc = jparse["tvShow"]?["description"]?.ToString();
+        show.Description = desc;
+
+
+
+    }
+
+    public void ConvertList(string json, ObservableCollection<string> names)
+    {
+        var jparse = JObject.Parse(json);
+        //Console.WriteLine(jparse);
+        var list = jparse["tv_shows"];
+        if (list != null)
+        {
+            foreach (var show in list)
+            {
+                var showName = show["name"]?.ToString();
+                if (showName != null)
+                {
+                    names.Add(showName);
+                    //Console.WriteLine(showName);
+                }
+            }
+        }
         
-        //Bye
         
-
-
-
-
-
-
-
 
     }
     

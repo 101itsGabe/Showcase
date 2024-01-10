@@ -16,6 +16,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition Height="*"/>
@@ -39,8 +40,9 @@
                 <Run Text="/10"/>
             </TextBlock>
         </Grid>
-        
-        <Grid Grid.Row="2">
+        <TextBlock Grid.Row="2" Text="{Binding Desc}" TextWrapping="Wrap"
+                   FontSize="18"></TextBlock>
+        <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
@@ -54,8 +56,8 @@
                    FontSize="30"/>
         </Grid>
         
-        <Button Grid.Row="3" Content="+" Click="UpdateEpisode"/>
+        <Button Grid.Row="4" Content="+" Click="UpdateEpisode"/>
         
-        <TextBox Grid.Row="4"></TextBox>
+        <TextBox Grid.Row="5"></TextBox>
     </Grid>
 </UserControl>

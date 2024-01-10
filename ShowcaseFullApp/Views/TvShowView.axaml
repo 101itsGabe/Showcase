@@ -13,14 +13,16 @@
     </Design.DataContext>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        
-        <ListBox ItemsSource="{Binding TvShowList, Mode=TwoWay}"
+        <TextBox Text="{Binding SearchString}"
+                 Height="25"></TextBox>
+        <ListBox Grid.Row="1" ItemsSource="{Binding TvShowList, Mode=TwoWay}"
                  SelectedItem="{Binding selectedTvShow, Mode=TwoWay}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                 <Button Content="{Binding Title}"
+                 <Button Content="{Binding}"
                          VerticalContentAlignment="Stretch"
                          Click="SelectedTvShow"
                          HorizontalAlignment="Stretch"

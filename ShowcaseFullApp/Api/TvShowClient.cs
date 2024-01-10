@@ -23,17 +23,30 @@ public class TvShowClient
         _client.BaseAddress = new Uri("https://www.episodate.com");
     }
     
-    public async Task<string?> GetAllShowsAsync()
+    public async Task<string?> GetAShowsAsync(string s)
     {
+        string search = s.ToLower();
+
+        for (int i = 0; i < search.Length; i++)
+        {
+            if (s[i] == ' ')
+            {
+                search = search.Replace(s[i], '-');
+            }
+            
+        }
+        
         try
         {
             //REMEMBER TO CHANGE THIS to a search query or something
-            const string apiUrl = "/api/show-details?q=keeping-up-with-the-kardashians";
+            string apiUrl = $"/api/show-details?q={search}";
 
+            
             var response = await _client.GetAsync(apiUrl);
 
             if (response.IsSuccessStatusCode)
             { 
+                //Console.WriteLine("Guys hes");
                 //Console.WriteLine(await response.Content.ReadAsStringAsync());
                 return await response.Content.ReadAsStringAsync();
             }
@@ -49,6 +62,60 @@ public class TvShowClient
             return null;
         }
     }
+
+    public async Task<string?> GetPopularShow()
+    {
+        try
+        {
+            const string apiUrl = "https://www.episodate.com/api/most-popular?page=1";
+
+            var response = await _client.GetAsync(apiUrl);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                throw new HttpRequestException($"Failed to get show {response.StatusCode}");
+            }
+            
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"Repsonse Exception: {ex.Message}");
+            return null;
+        }
+        
+    }
+    
+
+    public async Task<string?> GetShowSearch(string search)
+    {
+        int page = 1;
+        try
+        {
+            string apiUrl = $"/api/search?q=:{search}&page=:{page}";
+
+            var response = await _client.GetAsync(apiUrl);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await (response).Content.ReadAsStringAsync();
+            }
+            else
+            {
+                throw new HttpRequestException($"Failed to get show {response.StatusCode}");
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"Repsonse Exception: {ex.Message}");
+            return null;
+        }
+    }
+    
+/*
     
     public async Task<Bitmap?> DownloadImage(string imageUrl)
     {
@@ -76,7 +143,8 @@ public class TvShowClient
 
             return image;
     }
-        
+        */
+
     public tvShow ConvertToTvShow(string json)
     {
         var jparse = JObject.Parse(json);
