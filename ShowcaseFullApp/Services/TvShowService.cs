@@ -38,38 +38,44 @@ public class TvShowService
     public void Convert(string json, TvShow show)
     {
         var jparse = JObject.Parse(json);
-
-        //Show name
-        var name = jparse["tvShow"]?["name"]?.ToString();
-        show.Title = name;
         
-        //Last Season
-        var lastSeason =  jparse["tvShow"]?["episodes"]?.Last?["season"]?.ToString();
-        if (int.TryParse(lastSeason, out var num))
+        //onsole.WriteLine(jparse);
+
+        if (jparse["tvShow"]?.ToString() != null)
         {
-            show.SeasonCount = num;
+            //Show name
+            var name = jparse["tvShow"]?["name"]?.ToString();
+            if (name != null)
+                show.Title = name;
+
+            //Last Season
+            var lastSeason = jparse["tvShow"]?["episodes"]?.Last?["season"]?.ToString();
+            if (int.TryParse(lastSeason, out var num))
+            {
+                show.SeasonCount = num;
+            }
+
+            //Id
+            var id = jparse["tvShow"]?["id"]?.ToString();
+            if (int.TryParse(lastSeason, out var num2))
+            {
+                show.id = num2;
+            }
+
+
+            //Rating
+            var rating = jparse["tvShow"]?["rating"]?.ToString();
+            if (decimal.TryParse(rating, out var dec))
+            {
+                show.Rating = dec;
+            }
+
+            var desc = jparse["tvShow"]?["description"]?.ToString();
+            if (desc != null)
+                show.Description = desc;
+
+
         }
-        
-        //Id
-        var id = jparse["tvShow"]?["id"]?.ToString();
-        if (int.TryParse(lastSeason, out var num2))
-        {
-            show.id = num2;
-        }
-        
-        
-        //Rating
-        var rating = jparse["tvShow"]?["rating"]?.ToString();
-        if (decimal.TryParse(rating, out var dec))
-        {
-            show.Rating = dec;
-        }
-
-        var desc = jparse["tvShow"]?["description"]?.ToString();
-        show.Description = desc;
-
-
-
     }
 
     public void ConvertList(string json, ObservableCollection<string> names)

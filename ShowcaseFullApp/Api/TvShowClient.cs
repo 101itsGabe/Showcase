@@ -63,11 +63,11 @@ public class TvShowClient
         }
     }
 
-    public async Task<string?> GetPopularShow()
+    public async Task<string?> GetPopularShow(int page)
     {
         try
         {
-            const string apiUrl = "https://www.episodate.com/api/most-popular?page=1";
+            string apiUrl = $"https://www.episodate.com/api/most-popular?page={page}";
 
             var response = await _client.GetAsync(apiUrl);
 
@@ -90,9 +90,8 @@ public class TvShowClient
     }
     
 
-    public async Task<string?> GetShowSearch(string search)
+    public async Task<string?> GetShowSearch(string search, int page)
     {
-        int page = 1;
         try
         {
             string apiUrl = $"/api/search?q=:{search}&page=:{page}";
