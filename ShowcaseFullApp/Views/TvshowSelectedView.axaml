@@ -30,11 +30,11 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <TextBlock FontSize="30">
+            <TextBlock>
                 <Run Text="Seasons: "/>
                 <Run Text="{Binding SeasonCount}"/>
             </TextBlock>
-            <TextBlock Grid.Column="1" FontSize="30">
+            <TextBlock Grid.Column="1" >
                 <Run Text="Raitg"/>
                 <Run Text="{Binding Rating}"/>
                 <Run Text="/10"/>

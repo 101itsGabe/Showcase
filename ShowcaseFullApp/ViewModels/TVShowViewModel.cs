@@ -9,6 +9,7 @@ using Models;
 
 public class TVShowViewModel : ViewModelBase, INotifyPropertyChanged
 {
+    public int _curPage { get; set; }
     private TvShowClient tvclient { get; set; }
     private TvShowService tvservice { get; set; }
     public ObservableCollection<string> tvshowlist { get; set;  }
@@ -24,10 +25,12 @@ public class TVShowViewModel : ViewModelBase, INotifyPropertyChanged
         tvclient = new TvShowClient();
         tvservice = new TvShowService();
         searchString = "search";
+        _curPage = 1;
         foreach (var show in tvservice.showList)
         {
             tvshowlist.Add(show.Title);
         }
+        searchedList(searchString);
 
     }
     
@@ -60,7 +63,7 @@ public class TVShowViewModel : ViewModelBase, INotifyPropertyChanged
         tvshowlist.Clear();
         if (s == "" || s == "search")
         {
-            var json = await tvclient.GetPopularShow();
+            var json = await tvclient.GetPopularShow(_curPage);
             if (json != null)
             {
                 tvservice.ConvertList(json, tvshowlist);
@@ -69,7 +72,7 @@ public class TVShowViewModel : ViewModelBase, INotifyPropertyChanged
         }
         else
         {
-            var json = await tvclient.GetShowSearch(s);
+            var json = await tvclient.GetShowSearch(s, _curPage);
             if (json != null)
             {
                 tvservice.ConvertList(json, tvshowlist);
@@ -79,6 +82,20 @@ public class TVShowViewModel : ViewModelBase, INotifyPropertyChanged
         }
         
     }
+
+    public void updatePageup()
+    {
+        _curPage += 1;
+    }
+
+    public void updatePagedown()
+    {
+        if (_curPage > 1)
+        {
+            _curPage -= 1;
+        }
+    }
+    
     
     
     

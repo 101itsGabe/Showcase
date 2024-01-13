@@ -29,12 +29,24 @@ public partial class TvShowView : UserControl
         
         if (sender is Button { DataContext: string title })
         {
-            Console.WriteLine("help");
-            Console.WriteLine(title);
+            //Console.WriteLine("help");
+            //Console.WriteLine(title);
             this.Content = new TvShowSelectedView(title);
         }
-        
+    }
 
+    public void nextPage(object sender, RoutedEventArgs e)
+    {
+        tvshowviewmodel.updatePageup();
+        //Console.WriteLine(tvshowviewmodel._curPage);
+        tvshowviewmodel.searchedList(tvshowviewmodel.searchString);
+    }
+
+    public void prevPage(object sender, RoutedEventArgs e)
+    {
+        tvshowviewmodel.updatePagedown();
+        //Console.WriteLine(tvshowviewmodel._curPage);
+        tvshowviewmodel.searchedList(tvshowviewmodel.searchString);
     }
     
     

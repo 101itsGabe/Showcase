@@ -24,6 +24,8 @@ public class TvShowSelectedViewModel : ViewModelBase, INotifyPropertyChanged
     private TvShowClient tvclient;
     private TvShowService tvservice;
     private FirebaseApi firebase;
+    private MongoDBApi mongodb;
+    private SqlApi sqlapi;
 
     public string imageUrl = "https://static.episodate.com/images/tv-show/full/29560.jpg";
     //private Bitmap? tvShowBitmap;
@@ -39,6 +41,7 @@ public class TvShowSelectedViewModel : ViewModelBase, INotifyPropertyChanged
     {
     }
     
+    /*
     public TvShowSelectedViewModel(TvShow show)
     {
         tvclient = new TvShowClient();
@@ -49,13 +52,14 @@ public class TvShowSelectedViewModel : ViewModelBase, INotifyPropertyChanged
         searchedtvshow.Title = "Loading...";
         //InitTvSearchTitle();
     }
+    */
 
     public TvShowSelectedViewModel(string showName)
     {
-        //Console.WriteLine("heave");
         tvclient = new TvShowClient();
         searchedtvshow = new TvShow();
-        //Console.WriteLine("we in here #1");
+        sqlapi = new SqlApi();
+        mongodb = new MongoDBApi();
         tvservice = TvShowService.Current;
         searchedtvshow.Title = "Loading...";
         searchedtvshow.Description = "loading...";
@@ -154,11 +158,13 @@ public class TvShowSelectedViewModel : ViewModelBase, INotifyPropertyChanged
 
         Console.WriteLine("well ill be");
         //var snapshot = firebase.GetDocumentAsync();
-        Console.WriteLine(searchedtvshow.Description);
+        //Console.WriteLine(searchedtvshow.Description);
         OnPropertyChanged(nameof(TvShowTitle));
         OnPropertyChanged(nameof(SeasonCount));
         OnPropertyChanged(nameof(Rating));
         OnPropertyChanged(nameof(Desc));
 
     }
+    
+    
 }
