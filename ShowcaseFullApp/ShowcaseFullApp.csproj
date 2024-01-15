@@ -35,4 +35,11 @@
   <ItemGroup>
     <Folder Include="JsonFile\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="showcase-ebfee-firebase-adminsdk-14ql0-d0b9240d95.json" />
+    <Content Include="showcase-ebfee-firebase-adminsdk-14ql0-d0b9240d95.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

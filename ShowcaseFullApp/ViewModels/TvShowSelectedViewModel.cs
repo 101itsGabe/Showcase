@@ -19,13 +19,10 @@ namespace ShowcaseFullApp.ViewModels;
 
 public class TvShowSelectedViewModel : ViewModelBase, INotifyPropertyChanged
 {
-    public TvShow curTvShow;
     public TvShow searchedtvshow;
     private TvShowClient tvclient;
     private TvShowService tvservice;
     private FirebaseApi firebase;
-    private MongoDBApi mongodb;
-    private SqlApi sqlapi;
 
     public string imageUrl = "https://static.episodate.com/images/tv-show/full/29560.jpg";
     //private Bitmap? tvShowBitmap;
@@ -58,8 +55,9 @@ public class TvShowSelectedViewModel : ViewModelBase, INotifyPropertyChanged
     {
         tvclient = new TvShowClient();
         searchedtvshow = new TvShow();
-        sqlapi = new SqlApi();
-        mongodb = new MongoDBApi();
+        //sqlapi = new SqlApi();
+        //mongodb = new MongoDBApi();
+        firebase = new FirebaseApi();
         tvservice = TvShowService.Current;
         searchedtvshow.Title = "Loading...";
         searchedtvshow.Description = "loading...";
@@ -108,28 +106,13 @@ public class TvShowSelectedViewModel : ViewModelBase, INotifyPropertyChanged
         get => imageUrl;
     }
     
-/*
-    public Bitmap? TvShowImage
-    {
-        get=> tvShowBitmap;
-        set
-        {
-            if (tvShowBitmap != value)
-            {
-                tvShowBitmap = value;
-                OnPropertyChanged();
-            }
-        }
-    }
-    */
-    
 
 
     public int CurEpisode
     {
         
-        get => curTvShow.CurEpisode;
-        set => curTvShow.CurEpisode = value;
+        get => searchedtvshow.CurEpisode;
+        set => searchedtvshow.CurEpisode = value;
     }
 
     public string Desc
@@ -143,9 +126,20 @@ public class TvShowSelectedViewModel : ViewModelBase, INotifyPropertyChanged
 
     public void updateEpisode()
     {
-        curTvShow.CurEpisode += 1;
+        searchedtvshow.CurEpisode += 1;
         OnPropertyChanged(nameof(CurEpisode));
     }
+
+    public async void AddTvShow()
+    {
+        //string showName = curTvShow.Title;
+            Console.WriteLine("Wee");
+            Console.WriteLine();
+            await firebase.AddTvShow(searchedtvshow.Title);
+            Console.WriteLine("woo");
+        
+    }
+    
 
     private async void InitTvSearchTitle(string showName)
     {
@@ -156,7 +150,8 @@ public class TvShowSelectedViewModel : ViewModelBase, INotifyPropertyChanged
             tvservice.Convert(json, searchedtvshow);
         }
 
-        Console.WriteLine("well ill be");
+        await firebase.GetDocumentAsync();
+
         //var snapshot = firebase.GetDocumentAsync();
         //Console.WriteLine(searchedtvshow.Description);
         OnPropertyChanged(nameof(TvShowTitle));
