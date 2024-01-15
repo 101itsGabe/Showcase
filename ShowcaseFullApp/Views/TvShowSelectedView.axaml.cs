@@ -34,5 +34,16 @@ public partial class TvShowSelectedView : UserControl, INotifyPropertyChanged
     {
         tvsviewmodel.updateEpisode();
     }
+
+    public void AddShow(object sender, RoutedEventArgs e)
+    {
+        tvsviewmodel.AddTvShow();
+    }
+
+    public void backButton(object sender, RoutedEventArgs e)
+    {
+        this.Content = new TvShowView();
+    }
+    
     
 }
