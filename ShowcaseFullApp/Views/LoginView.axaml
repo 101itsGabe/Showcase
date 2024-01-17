@@ -13,11 +13,16 @@
     </Design.DataContext>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
+
         </Grid.RowDefinitions>
-        <TextBox Text="{Binding Username}"></TextBox>
-        <Button Grid.Row="1" Content="Login" Click="LoginClick"/>
+        <TextBox Text="{Binding Email}"></TextBox>
+        <TextBox Grid.Row="1" PasswordChar= "*" Text="{Binding Password}"></TextBox>
+        <Button Grid.Row="2" Content="SignUp" Click="SignupClick"/>
+        <Button Grid.Row="3" Content="Login" Click="LoginClick"></Button>
         
     </Grid>
 </UserControl>

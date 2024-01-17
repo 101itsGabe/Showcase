@@ -20,6 +20,8 @@
   <ItemGroup>
     <PackageReference Include="Avalonia.Android" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Bitmap.Net" Version="1.0.1" />
+    <PackageReference Include="FirebaseAdmin" Version="2.4.0" />
+    <PackageReference Include="FirebaseAuthentication.net" Version="4.1.0" />
     <PackageReference Include="FireSharp.Serialization.JsonNet" Version="1.1.0" />
     <PackageReference Include="Google.Cloud.Firestore" Version="3.5.0-beta01" />
     <PackageReference Include="MongoDB.Driver" Version="2.23.1" />
