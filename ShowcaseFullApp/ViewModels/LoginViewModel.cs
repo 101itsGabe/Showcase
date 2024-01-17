@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using ShowcaseFullApp.Api;
 using ShowcaseFullApp.Models;
 using ShowcaseFullApp.Services;
@@ -43,13 +44,15 @@ public class LoginViewModel
 
     }
 
-    public async void Login()
+    public async Task<bool> Login()
     {
         var token = await firebase.LoginToFirebase(_email, _password);
         if (token != null)
         {
             _userService.email = _email;
+            return true;
         }
+        return false;
         
     }
 

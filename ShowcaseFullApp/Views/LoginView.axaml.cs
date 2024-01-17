@@ -22,10 +22,13 @@ namespace ShowcaseFullApp.Views;
             this.Content = new TvShowView();
         }
 
-        public void LoginClick(object sender, RoutedEventArgs e)
+        public async void LoginClick(object sender, RoutedEventArgs e)
         {
-            loginviewmodel.Login();
-            this.Content = new TvShowView();
+            var ifLogin = await loginviewmodel.Login();
+            if (ifLogin)
+            {
+                this.Content = new TvShowView();
+            }
         }
         
     }
