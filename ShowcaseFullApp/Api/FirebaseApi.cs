@@ -1,14 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection.Metadata;
 using System.Threading.Tasks;
+using Amazon.SecurityToken.Model;
 using Avalonia.Controls.Primitives;
 using Avalonia.Styling;
+using Firebase.Auth;
+using Firebase.Auth.Providers;
 using FireSharp;
 using Google.Apis.Auth.OAuth2;
+using ShowcaseFullApp.Services;
 
 namespace ShowcaseFullApp.Api;
 using FireSharp.Config;
@@ -20,7 +25,12 @@ public class FirebaseApi
 {
     private FirestoreDb _db;
 
+    private string apiKey = "AIzaSyDixyNjSzDT1dcYNqD2NYCAaOstvbrS-7o";
     private CollectionReference _collection;
+    private readonly FirebaseAuthClient _firebaseAuth;
+    private UserService _userService;
+
+    private FirebaseAuthConfig config;
     //string projectId = "showcase-ebfee";
 
     public FirebaseApi()
@@ -28,11 +38,22 @@ public class FirebaseApi
 
         Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "showcase-ebfee-firebase-adminsdk-14ql0-d0b9240d95.json");
 
+        _userService = new UserService();
         _db = FirestoreDb.Create("showcase-ebfee");
         _collection = _db.Collection("Users");
-        QuerySnapshot querySnapshot = _collection.GetSnapshotAsync().Result;
-        DocumentReference docRef = _db.Collection("users").Document("document-id");
-        
+        config = new FirebaseAuthConfig
+        {
+            ApiKey = apiKey,
+            AuthDomain = "showcase-ebfee.firebaseapp.com",
+            Providers = new FirebaseAuthProvider[]
+            {
+                new EmailProvider()
+            }
+        };
+        _firebaseAuth = new FirebaseAuthClient(config);
+        //var auth = await authProvider.SignInWithEmailAndPasswordAsync(email, password);
+
+
     }
 
     public async void refresh()
@@ -53,60 +74,130 @@ public class FirebaseApi
             email = docSnap.GetValue<string>("email");
             docId = docSnap.Id;
             DocumentReference docRef2 = _db.Collection("Users").Document(docId);
-            //Console.WriteLine(_db.Collection("users").Document(docId).Collection("tvshows").ToString());
             CollectionReference showRef = docRef2.Collection("tvshows");
             QuerySnapshot snapshot2 = await showRef.GetSnapshotAsync();
-            /*
-            foreach (var docsnap2 in snapshot2.Documents)
-            {
-                var epname = docsnap2.GetValue<string>("curepname");
-                var epnum = docsnap2.GetValue<int>("curepnum").ToString();
-                Console.WriteLine($"EpName: {epname}, EpNum: {epnum}");
-            }
-            */
-            
-            //Console.WriteLine($"email: {email}, docId: {docId}");
         }
     }
 
     public async Task AddTvShow(string showName)
     {
-        Console.WriteLine("Not even");
         refresh();
-        QuerySnapshot snapshot = _collection.GetSnapshotAsync().Result;
-        foreach (DocumentSnapshot docSnap in snapshot.Documents)
+        if (_userService.email != "")
         {
-            var docId = docSnap.Id;
-            if (docId != null)
+            Console.WriteLine(_userService.email);
+            var emailquery = _collection.WhereEqualTo("email", _userService.email);
+            QuerySnapshot snapshot = await emailquery.GetSnapshotAsync();
+            foreach (DocumentSnapshot docSnap in snapshot.Documents)
             {
-                var docRef = _collection.Document(docId);
-                var showRef = docRef.Collection("tvshows");
-                var snapshot2 = await showRef.GetSnapshotAsync();
-                bool isIn = false;
-                Query query = showRef.WhereEqualTo("tvshowname", showName);
-                QuerySnapshot qs = await query.GetSnapshotAsync();
-                Console.WriteLine(qs.Documents.Count());
-                if (qs.Documents.Count() > 0)
+                var docId = docSnap.Id;
+                if (docId != null)
                 {
-                    isIn = true;
-                }
-
-                if (isIn == false)
-                {
-                    Dictionary<string, object> data = new Dictionary<string, object>
+                    var docRef = _collection.Document(docId);
+                    var showRef = docRef.Collection("tvshows");
+                    var snapshot2 = await showRef.GetSnapshotAsync();
+                    bool isIn = false;
+                    Query query = showRef.WhereEqualTo("tvshowname", showName);
+                    QuerySnapshot qs = await query.GetSnapshotAsync();
+                    Console.WriteLine(qs.Documents.Count());
+                    if (qs.Documents.Count() > 0)
                     {
-                        { "curepname", "lil kodak" },
-                        { "curepnum", 1 },
-                        { "tvshowname", showName }
-                    };
+                        isIn = true;
+                    }
 
-                    await showRef.AddAsync(data);
-                }
-                else
-                {
-                    Console.WriteLine("IM NEKED");
+                    if (isIn == false)
+                    {
+                        Dictionary<string, object> data = new Dictionary<string, object>
+                        {
+                            { "curepname", "lil kodak" },
+                            { "curepnum", 1 },
+                            { "tvshowname", showName }
+                        };
+
+                        await showRef.AddAsync(data);
+                    }
                 }
             }
         }
     }
+
+
+    public async Task<string?> Signup(string email, string password)
+    {
+        Console.WriteLine($"Email:{email}, Password: {password}");
+        try
+        {
+            var userCredentials = await _firebaseAuth.CreateUserWithEmailAndPasswordAsync(email, password);
+            if (userCredentials != null)
+            { 
+                addUserToFirebase(email);
+            }
+            
+            return userCredentials is null ? null : await userCredentials.User.GetIdTokenAsync();
+        }
+        catch (FirebaseAuthException ex)
+        {
+            Console.WriteLine($"Error creating user: {ex.Reason}");
+            // Handle the exception appropriately
+        }
+        
+        
+
+        return null;
+    }
+
+    private async void addUserToFirebase(string email)
+    {
+        Console.WriteLine("inside add user");
+        refresh();
+        var query = _collection.WhereEqualTo("email", email);
+        QuerySnapshot snapshot = await query.GetSnapshotAsync();
+        if (snapshot.Count <= 0)
+        {
+            
+            Dictionary<string, object> data = new Dictionary<string, object>
+            {
+                { "email", email }
+            };
+
+            DocumentReference docref = await _collection.AddAsync(data);
+            CollectionReference showRef = docref.Collection("tvshows");
+            QuerySnapshot query2 = await showRef.GetSnapshotAsync();
+            
+            Dictionary<string, object> subcollectionData = new Dictionary<string, object>
+            {
+                // Add any data for the subcollection if needed
+            };
+
+            await showRef.AddAsync(subcollectionData);
+            
+        }
+        else
+        {
+            Console.WriteLine($"{email} is already in here");
+        }
+        
+
+    }
+
+    public async Task<string?> LoginToFirebase(string email, string password)
+    {
+        try
+        {
+            var userCredentials = await _firebaseAuth.SignInWithEmailAndPasswordAsync(email, password);
+            if (userCredentials != null)
+            {
+                return await userCredentials.User.GetIdTokenAsync();
+            }
+            
+        }
+        catch (FirebaseAuthException ex)
+        {
+            Console.WriteLine($"Login failed: {ex.Reason}");
+        }
+
+        return null;
+    }
+    
+    
+    
 }

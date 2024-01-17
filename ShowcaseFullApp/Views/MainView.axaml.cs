@@ -19,7 +19,11 @@ public partial class MainView : UserControl
     {
         this.Content = new TvShowView();
     }
-    
+
+    public void LoginClick(object sender, RoutedEventArgs e)
+    {
+        this.Content = new LoginView();
+    }
     
     
 }
