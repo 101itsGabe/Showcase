@@ -20,6 +20,7 @@ using FireSharp.Config;
 using FireSharp.Interfaces;
 using FireSharp.Response;
 using Google.Cloud.Firestore;
+using Grpc.Core;
 
 public class FirebaseApi
 {
@@ -47,7 +48,8 @@ public class FirebaseApi
             AuthDomain = "showcase-ebfee.firebaseapp.com",
             Providers = new FirebaseAuthProvider[]
             {
-                new EmailProvider()
+                new EmailProvider(),
+                new GoogleProvider()
             }
         };
         _firebaseAuth = new FirebaseAuthClient(config);
@@ -81,6 +83,7 @@ public class FirebaseApi
 
     public async Task AddTvShow(string showName)
     {
+        Console.WriteLine("INSIDE TV SHOW");
         refresh();
         if (_userService.email != "")
         {
@@ -197,6 +200,17 @@ public class FirebaseApi
 
         return null;
     }
+
+    /*
+    public async Task<string?> LoginGoogle()
+    {
+        try
+        {
+            var userCredentials = await _firebaseAuth.Login
+        }
+    }
+    */
+    
     
     
     

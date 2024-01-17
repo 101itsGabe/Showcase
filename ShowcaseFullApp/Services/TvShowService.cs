@@ -43,6 +43,7 @@ public class TvShowService
 
         if (jparse["tvShow"]?.ToString() != null)
         {
+            Console.WriteLine(jparse["tvshow"]?.ToString());
             //Show name
             var name = jparse["tvShow"]?["name"]?.ToString();
             if (name != null)
