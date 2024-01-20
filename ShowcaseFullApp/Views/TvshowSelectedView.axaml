@@ -45,22 +45,29 @@
             </TextBlock>
         </Grid>
         
-        <Button Grid.Row="3" Content="Add This Show +" Click="AddShow"/>
+        <Button Grid.Row="3" Content="Add This Show +" Click="AddShow" IsEnabled="{Binding  hasBeenAdded}"/>
         
         <TextBlock Grid.Row="4" Text="{Binding Desc}" TextWrapping="Wrap"
                    FontSize="18"></TextBlock>
         <Grid Grid.Row="5">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text ="Ep: "
+            <TextBlock Text="Season: " FontSize="30"></TextBlock>
+            <TextBlock Grid.Column="1" Text="{Binding CurSeason}" FontSize="30"></TextBlock>
+            
+            <TextBlock Grid.Column="2" Text="Ep: " FontSize="30"></TextBlock>
+            <TextBlock Grid.Column="3" Text="{Binding CurEpisode, Mode=TwoWay}"
                        FontSize="30"/>
-                <Image Grid.Column="1" Source="{Binding ImageUrl}"
-                    Width="200" Height="200"></Image>
-                <TextBlock Grid.Column="2" Text="{Binding CurEpisode, Mode=TwoWay}"
-                   FontSize="30"/>
+            <TextBlock Grid.Column="4" Text ="{Binding EpTitle}"
+                       FontSize="20"/>
+                <!--<Image Grid.Column="1" Source="{Binding ImageUrl}"
+                    Width="200" Height="200"></Image>-->
         </Grid>
         
         <Button Grid.Row="6" Content="+" Click="UpdateEpisode"/>

@@ -14,6 +14,7 @@ using Firebase.Auth.Providers;
 using FireSharp;
 using Google.Apis.Auth.OAuth2;
 using ShowcaseFullApp.Services;
+using ShowcaseFullApp.ViewModels;
 
 namespace ShowcaseFullApp.Api;
 using FireSharp.Config;
@@ -39,7 +40,7 @@ public class FirebaseApi
 
         Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "showcase-ebfee-firebase-adminsdk-14ql0-d0b9240d95.json");
 
-        _userService = new UserService();
+        _userService = UserService.Current;
         _db = FirestoreDb.Create("showcase-ebfee");
         _collection = _db.Collection("Users");
         config = new FirebaseAuthConfig
@@ -81,15 +82,15 @@ public class FirebaseApi
         }
     }
 
-    public async Task AddTvShow(string showName)
+    public async Task AddTvShow(string showName, string epName, int id)
     {
-        Console.WriteLine("INSIDE TV SHOW");
         refresh();
         if (_userService.email != "")
         {
-            Console.WriteLine(_userService.email);
+            //Console.WriteLine(_userService.email);
             var emailquery = _collection.WhereEqualTo("email", _userService.email);
             QuerySnapshot snapshot = await emailquery.GetSnapshotAsync();
+            //Console.WriteLine(snapshot.Documents.Count);
             foreach (DocumentSnapshot docSnap in snapshot.Documents)
             {
                 var docId = docSnap.Id;
@@ -101,19 +102,21 @@ public class FirebaseApi
                     bool isIn = false;
                     Query query = showRef.WhereEqualTo("tvshowname", showName);
                     QuerySnapshot qs = await query.GetSnapshotAsync();
-                    Console.WriteLine(qs.Documents.Count());
-                    if (qs.Documents.Count() > 0)
+                    //Console.WriteLine(qs.Documents.Count);
+                    if (qs.Documents.Count > 0)
                     {
                         isIn = true;
                     }
-
+                    Console.WriteLine(isIn);
                     if (isIn == false)
                     {
                         Dictionary<string, object> data = new Dictionary<string, object>
                         {
-                            { "curepname", "lil kodak" },
+                            { "curepname", epName },
                             { "curepnum", 1 },
-                            { "tvshowname", showName }
+                            { "tvshowname", showName },
+                            { "curseason", 1 },
+                            { "showId", id}
                         };
 
                         await showRef.AddAsync(data);
@@ -121,12 +124,17 @@ public class FirebaseApi
                 }
             }
         }
+        else
+        {
+            Console.WriteLine("HAHA");
+        }
+        
     }
 
 
     public async Task<string?> Signup(string email, string password)
     {
-        Console.WriteLine($"Email:{email}, Password: {password}");
+        //Console.WriteLine($"Email:{email}, Password: {password}");
         try
         {
             var userCredentials = await _firebaseAuth.CreateUserWithEmailAndPasswordAsync(email, password);
@@ -150,7 +158,6 @@ public class FirebaseApi
 
     private async void addUserToFirebase(string email)
     {
-        Console.WriteLine("inside add user");
         refresh();
         var query = _collection.WhereEqualTo("email", email);
         QuerySnapshot snapshot = await query.GetSnapshotAsync();
@@ -200,6 +207,149 @@ public class FirebaseApi
 
         return null;
     }
+
+    public async Task<List<idShow>> getShowList(string email)
+    {
+        List<idShow> showList = new List<idShow>();
+        var query = _collection.WhereEqualTo("email", email);
+        QuerySnapshot snapshot = await query.GetSnapshotAsync();
+        foreach (var doc in snapshot.Documents)
+        {
+            DocumentReference curdoc = _collection.Document(doc.Id);
+            CollectionReference showRef = curdoc.Collection("tvshows");
+            QuerySnapshot query2 = await showRef.GetSnapshotAsync();
+            foreach (var showDoc in query2.Documents)
+            {
+                // Assuming "showName" is a field in your TV show documents
+                string showName = showDoc.GetValue<string>("tvshowname");
+                string curEp = showDoc.GetValue<string>("curepname");
+                string epNum = showDoc.GetValue<int>("curepnum").ToString();
+                string id = showDoc.GetValue<int>("showId").ToString();
+                string showValue = $"{showName}, Episode {epNum}: {curEp}";
+                Console.WriteLine(showValue);
+                if (int.TryParse(id, out int curID))
+                {
+                    idShow curShow = new idShow();
+                    curShow.name = showValue;
+                    curShow.id = curID;
+                    showList.Add(curShow);
+                }
+            }
+        }
+
+        return showList;
+    }
+
+    public async Task<bool> isAdded(string email, string showName)
+    {
+        var query = _collection.WhereEqualTo("email", email);
+        QuerySnapshot snapshot = await query.GetSnapshotAsync();
+        foreach (var doc in snapshot.Documents)
+        {
+            DocumentReference docref = _collection.Document(doc.Id);
+            CollectionReference showRef = docref.Collection("tvshows");
+            QuerySnapshot query2 = await showRef.GetSnapshotAsync();
+            foreach (var showDoc in query2.Documents)
+            {
+                var curshowname = showDoc.GetValue<string>("tvshowname");
+                if (curshowname == showName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        return false;
+    }
+
+    public async Task<int> getCurEp(string email, string showName)
+    {
+        var query = _collection.WhereEqualTo("email", email);
+        QuerySnapshot snapshot = await query.GetSnapshotAsync();
+        foreach (var doc in snapshot.Documents)
+        {
+            DocumentReference docref = _collection.Document(doc.Id);
+            CollectionReference showRef = docref.Collection("tvshows");
+            QuerySnapshot query2 = await showRef.GetSnapshotAsync();
+            foreach (var showDoc in query2.Documents)
+            {
+                var curshowname = showDoc.GetValue<string>("tvshowname");
+                if (curshowname == showName)
+                {
+                    return showDoc.GetValue<int>("curepnum");
+                }
+            }
+        }
+
+        return 0;
+    }
+    
+    public async Task<int> getCurSeason(string email, string showName)
+    {
+        var query = _collection.WhereEqualTo("email", email);
+        QuerySnapshot snapshot = await query.GetSnapshotAsync();
+        foreach (var doc in snapshot.Documents)
+        {
+            DocumentReference docref = _collection.Document(doc.Id);
+            CollectionReference showRef = docref.Collection("tvshows");
+            QuerySnapshot query2 = await showRef.GetSnapshotAsync();
+            foreach (var showDoc in query2.Documents)
+            {
+                var curshowname = showDoc.GetValue<string>("tvshowname");
+                if (curshowname == showName)
+                {
+                    return showDoc.GetValue<int>("curseason");
+                }
+            }
+        }
+
+        return 0;
+    }
+
+
+    public async void updateEp(string email, string showName, int lastEp, int curSeason, string epName)
+    {
+        var query = _collection.WhereEqualTo("email", email);
+        QuerySnapshot snapshot = await query.GetSnapshotAsync();
+        foreach (var doc in snapshot.Documents)
+        {
+            DocumentReference docref = _collection.Document(doc.Id);
+            CollectionReference showRef = docref.Collection("tvshows");
+            QuerySnapshot query2 = await showRef.GetSnapshotAsync();
+            foreach (var showDoc in query2.Documents)
+            {
+                var curshowname = showDoc.GetValue<string>("tvshowname");
+                if (curshowname == showName)
+                {
+                    var epNum = showDoc.GetValue<int>("curepnum");
+                    if (lastEp >= epNum)
+                    {
+                        var updateData = new Dictionary<string, object>
+                        {
+                            { "curepnum", epNum + 1 },
+                            { "curepname", epName}
+                        };
+                        await showDoc.Reference.UpdateAsync(updateData);
+                    }
+                    else
+                    {
+                        var updateData = new Dictionary<string, object>
+                        {
+                            { "curepnum", 1 },
+                            {"curepname", epName},
+                            {"curseason", curSeason + 1}
+                        };
+                        await showDoc.Reference.UpdateAsync(updateData);
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
 
     /*
     public async Task<string?> LoginGoogle()

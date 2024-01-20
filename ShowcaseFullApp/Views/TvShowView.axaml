@@ -14,16 +14,25 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBox Text="{Binding SearchString}"
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="Back" Click="backbutton"/>
+            <Button Grid.Column="1" Content="Account View" Click="AccountViewClick"></Button>
+        </Grid>
+        <TextBox Grid.Row="1" Text="{Binding SearchString}"
                  Height="25"></TextBox>
-        <ListBox Grid.Row="1" ItemsSource="{Binding TvShowList, Mode=TwoWay}"
+        <ListBox Grid.Row="2" ItemsSource="{Binding TvShowList, Mode=TwoWay}"
                  SelectedItem="{Binding selectedTvShow, Mode=TwoWay}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                 <Button Content="{Binding}"
+                 <Button Content="{Binding name}"
                          VerticalContentAlignment="Stretch"
                          Click="SelectedTvShow"
                          HorizontalAlignment="Stretch"
@@ -32,7 +41,7 @@
             </ListBox.ItemTemplate>
         </ListBox>
         
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>

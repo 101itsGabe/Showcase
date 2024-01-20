@@ -36,6 +36,12 @@ public class TvShow
     public int id { get; set; }
 
     public int CurEpisode { get; set; }
+    
+    public string CurEpTitle { get; set; }
+    
+    public int CurSeason { get; set; }
+    
+    public int LastEpSeasonNum { get; set; }
 
     public Bitmap? ImageStream { get; set; }
 

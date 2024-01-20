@@ -22,10 +22,10 @@ public partial class TvShowSelectedView : UserControl, INotifyPropertyChanged
     }
     */
 
-    public TvShowSelectedView(string showName)
+    public TvShowSelectedView(string showName, int id)
     {
         this.InitializeComponent();
-        tvsviewmodel = new TvShowSelectedViewModel(showName);
+        tvsviewmodel = new TvShowSelectedViewModel(showName, id);
         this.DataContext = tvsviewmodel;
     }
     
@@ -38,6 +38,7 @@ public partial class TvShowSelectedView : UserControl, INotifyPropertyChanged
     public void AddShow(object sender, RoutedEventArgs e)
     {
         tvsviewmodel.AddTvShow();
+        tvsviewmodel.hasBeenAdded = false;
     }
 
     public void backButton(object sender, RoutedEventArgs e)

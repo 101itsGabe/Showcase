@@ -23,8 +23,9 @@ public class TvShowClient
         _client.BaseAddress = new Uri("https://www.episodate.com");
     }
     
-    public async Task<string?> GetAShowsAsync(string s)
+    public async Task<string?> GetAShowsAsync(int id)
     {
+        /*
         string search = s.ToLower();
 
         for (int i = 0; i < search.Length; i++)
@@ -32,14 +33,15 @@ public class TvShowClient
             if (s[i] == ' ')
             {
                 search = search.Replace(s[i], '-');
+                Console.WriteLine(search);
             }
             
         }
-        
+        */
         try
         {
             //REMEMBER TO CHANGE THIS to a search query or something
-            string apiUrl = $"/api/show-details?q={search}";
+            string apiUrl = $"/api/show-details?q={id}";
 
             
             var response = await _client.GetAsync(apiUrl);
@@ -113,6 +115,8 @@ public class TvShowClient
             return null;
         }
     }
+    
+    
     
 /*
     

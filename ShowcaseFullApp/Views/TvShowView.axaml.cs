@@ -2,6 +2,7 @@ using System;
 using System.Runtime.Loader;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using MongoDB.Driver.Linq;
 using ShowcaseFullApp.ViewModels;
 using ShowcaseFullApp.Models;
 
@@ -26,12 +27,19 @@ public partial class TvShowView : UserControl
             this.Content = new TvShowSelectedViewModel(tvshowviewmodel.selectedTvShow.Title);
         }
         */
-        
-        if (sender is Button { DataContext: string title })
+        Console.WriteLine("HELP");
+        if (sender is Button { DataContext: idShow curShow })
         {
             //Console.WriteLine("help");
-            //Console.WriteLine(title);
-            this.Content = new TvShowSelectedView(title);
+            Console.WriteLine(curShow.name);
+            foreach (var show in tvshowviewmodel.tvshowlist)
+            {
+                if (show.name == curShow.name)
+                {
+                    this.Content = new TvShowSelectedView(curShow.name, curShow.id);
+                }
+                
+            }
         }
     }
 
@@ -48,6 +56,15 @@ public partial class TvShowView : UserControl
         //Console.WriteLine(tvshowviewmodel._curPage);
         tvshowviewmodel.searchedList(tvshowviewmodel.searchString);
     }
-    
-    
+
+
+    private void backbutton(object? sender, RoutedEventArgs e)
+    {
+        this.Content = new MainView();
+    }
+
+    private void AccountViewClick(object? sender, RoutedEventArgs e)
+    {
+        this.Content = new UserAccountView();
+    }
 }

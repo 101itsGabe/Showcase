@@ -7,12 +7,18 @@ using System.Runtime.CompilerServices;
 namespace ShowcaseFullApp.ViewModels;
 using Models;
 
+public struct idShow
+{
+    public string name { get; set; }
+    public int id { get; set; }
+}
+
 public class TVShowViewModel : ViewModelBase, INotifyPropertyChanged
 {
     public int _curPage { get; set; }
     private TvShowClient tvclient { get; set; }
     private TvShowService tvservice { get; set; }
-    public ObservableCollection<string> tvshowlist { get; set;  }
+    public ObservableCollection<idShow> tvshowlist { get; set;  }
     
     public string searchString { get; set; }
     
@@ -21,14 +27,16 @@ public class TVShowViewModel : ViewModelBase, INotifyPropertyChanged
     public TVShowViewModel()
     {
         //when you get the users tvshow probably put it in the constructor
-        tvshowlist = new ObservableCollection<string>();
+        tvshowlist = new ObservableCollection<idShow>();
         tvclient = new TvShowClient();
-        tvservice = new TvShowService();
+        tvservice = TvShowService.Current;
         searchString = "search";
         _curPage = 1;
         foreach (var show in tvservice.showList)
         {
-            tvshowlist.Add(show.Title);
+            idShow curShow = new idShow();
+            curShow.name = show.Title;
+            tvshowlist.Add(curShow);
         }
         searchedList(searchString);
 
@@ -41,7 +49,7 @@ public class TVShowViewModel : ViewModelBase, INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    public ObservableCollection<string> TvShowList
+    public ObservableCollection<idShow> TvShowList
     {
         get { return tvshowlist; }
         set { tvshowlist = value; }
@@ -55,13 +63,14 @@ public class TVShowViewModel : ViewModelBase, INotifyPropertyChanged
             searchString = value;
             searchedList(searchString);
             OnPropertyChanged(SearchString);
+            OnPropertyChanged(nameof(TvShowList));
         }
     }
 
     public async void searchedList(string s)
     {
         tvshowlist.Clear();
-        if (s == "" || s == "search")
+        if (s == "" || s == "search" || s == " ")
         {
             var json = await tvclient.GetPopularShow(_curPage);
             if (json != null)
