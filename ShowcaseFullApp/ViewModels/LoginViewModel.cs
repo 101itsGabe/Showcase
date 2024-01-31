@@ -12,9 +12,11 @@ public class LoginViewModel
     private string _password { get; set; }
     private FirebaseApi firebase;
     private UserService _userService;
+    private MongodbApi _mongodbApi;
 
     public LoginViewModel()
     {
+        _mongodbApi = new MongodbApi();
         firebase = new FirebaseApi();
         _userService = UserService.Current;
     }
